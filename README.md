@@ -1,7 +1,6 @@
 # LA_project_GooglePageRank
 Implementation of Google PageRank algorithm for the LA course
 ## Contributors
-(sophmintaii)[]
  - [Sofiia Myntiuk](https://github.com/sophmintaii)
  - [Daryna Hnatenko](https://github.com/monberin)
  - [Valeriia Sydorenko](https://github.com/lero4kaa)
