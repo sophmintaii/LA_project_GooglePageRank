@@ -1,8 +1,11 @@
 """
 The main module of the program.
 """
-from src import matrix, power_method
+from sys import argv
+
+from src import matrix, power_method, metrics,visualize
 import time
+import numpy as np
 
 
 def page_rank(input_filename="resourses/art.csv",
@@ -41,7 +44,6 @@ def page_rank(input_filename="resourses/art.csv",
     pagerank_vector_adaptive = pagerank_result_adaptive[-1][0]
     print("Computational time for pagerank with adaptive method = ", time_2)
 
-    print(len(list(names.values())), len(pagerank_vector))
     result_dict = [(list(names.values())[i], pagerank_vector[i]) for i
                    in range(len(pagerank_vector))]
     result_dict = sorted(result_dict, key=lambda t: t[1])[::-1]
@@ -49,10 +51,36 @@ def page_rank(input_filename="resourses/art.csv",
     result_dict_adaptive = [(list(names.values())[i], pagerank_vector_adaptive[i]) for i
                             in range(len(pagerank_vector_adaptive))]
     result_dict_adaptive = sorted(result_dict_adaptive, key=lambda t: t[1])[::-1]
-    return result_dict, result_dict_adaptive
+
+    netxpage = np.array(list(metrics.nxpg(input_names_filename,input_filename).items()))
+    result_netx = sorted(netxpage, key=lambda t: t[1])[::-1]
+    for ind in range(len(result_netx)):
+        new_el = (names[result_netx[ind][0]], float(result_netx[ind][1]))
+        result_netx[ind] = new_el
+
+    return result_dict, result_dict_adaptive, result_netx
 
 
 if __name__ == "__main__":
-    result1, result2 = page_rank()
+    in_edges, in_names = argv[1:]
+    visualize.visualition(in_edges, in_names)
+    result1, result2, netx = page_rank(in_edges, in_names)
     for i in range(len(result1)):
-        print(i+1, result1[i], result2[i])
+        print(i+1, result1[i], result2[i], netx[i])
+    print("-------------- POWER AND ADAPTIVE --------------")
+    print('MAP comparison: ',metrics.MAP_comparison(result1,result2))
+    print('Kendall Tau: ', metrics.normalised_kendall_tau_distance([x[0] for x in result1],[x[0] for x in result2]))
+    print('AVG misplacement: ', metrics.avg_distance([x[0] for x in result1],[x[0] for x in result2]))
+    print('AVG probability diff: ',np.average(metrics.prob_difference(result1,result2)))
+
+    print("-------------- POWER AND NETWORKX --------------")
+    print('MAP comparison: ', metrics.MAP_comparison(result1, netx))
+    print('Kendall Tau: ', metrics.normalised_kendall_tau_distance([x[0] for x in result1], [x[0] for x in netx]))
+    print('AVG misplacement: ', metrics.avg_distance([x[0] for x in result1], [x[0] for x in netx]))
+    print('AVG probability diff: ', np.average(metrics.prob_difference(result1, netx)))
+
+    print("-------------- ADAPTIVE AND NETWORKX--------------")
+    print('MAP comparison: ', metrics.MAP_comparison(netx, result2))
+    print('Kendall Tau: ', metrics.normalised_kendall_tau_distance([x[0] for x in netx], [x[0] for x in result2]))
+    print('AVG misplacement: ', metrics.avg_distance([x[0] for x in netx], [x[0] for x in result2]))
+    print('AVG probability diff: ', np.average(metrics.prob_difference(netx, result2)))
