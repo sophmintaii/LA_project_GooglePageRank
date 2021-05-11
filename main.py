@@ -1,8 +1,7 @@
 """
 The main module of the program.
 """
-import matrix
-import power_method
+from src import matrix, power_method
 
 
 def page_rank(input_filename="test.csv",
