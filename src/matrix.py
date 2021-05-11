@@ -2,9 +2,9 @@
 This module contains implementations of the methods that allow
 to work with matrices needed for PageRank algorithm.
 """
-from csv import reader
 import networkx as nx
 import numpy as np
+from csv import reader
 import pandas as pd
 
 
@@ -20,15 +20,15 @@ def read_adj_matrix(filename, filename_names):
         csv_reader = reader(filein)
         names = list(map(tuple, csv_reader))[1:]
     names = dict(names)
-    nodes = [str(node) for node in range(1, len(names) + 1)]
+    nodes = [str(node) for node in range(0, len(names))]
     edges = []
     with open(filename, "r") as filein:
         csv_reader = reader(filein)
         edges = list(map(tuple, csv_reader))[1:]
-    g = nx.DiGraph()
+    g = nx.Graph()
     g.add_nodes_from(nodes)
     g.add_edges_from(edges)
-    return nx.to_pandas_adjacency(g).to_numpy(), names
+    return nx.to_pandas_adjacency(g).to_numpy(), names, g
 
 
 def matrix_S(adj_matrix):
